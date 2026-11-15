@@ -9,6 +9,13 @@
 
 const DOMAIN = "smart_comfort";
 
+// The integration's emblem (house + thermometer + bell), a single monochrome path (fill currentColor), shared with
+// the sidebar icon set (smart-comfort-icons.js). Drawn inline in the overview hero so it never depends on the custom
+// icon set being registered before the hero is built.
+const EMBLEM_VIEWBOX = "68 44 400 400";
+const EMBLEM_PATH =
+  "M87.727,225.972 L247.727,93.972 Q256,87.147 264.273,93.972 L424.273,225.972 Q428.427,229.399 428.941,234.759 Q429.455,240.119 426.028,244.273 Q422.601,248.427 417.241,248.941 Q411.881,249.455 407.727,246.028 L256,120.853 L104.273,246.028 Q100.119,249.455 94.759,248.941 Q89.399,248.427 85.972,244.273 Q82.545,240.119 83.059,234.759 Q83.573,229.399 87.727,225.972 Z M151,214 L151,388 Q151,389.736 151.281,390.719 Q152.264,391 154,391 L358,391 Q359.736,391 360.719,390.719 Q361,389.736 361,388 L361,214 Q361,208.615 364.808,204.808 Q368.615,201 374,201 Q379.385,201 383.192,204.808 Q387,208.615 387,214 L387,388 Q387,401.385 379.192,409.192 Q371.385,417 358,417 L154,417 Q140.615,417 132.808,409.192 Q125,401.385 125,388 L125,214 Q125,208.615 128.808,204.808 Q132.615,201 138,201 Q143.385,201 147.192,204.808 Q151,208.615 151,214 Z M256,202 Q266.77,202 274.385,209.615 Q282,217.23 282,228 L282,336 Q282,346.77 274.385,354.385 Q266.77,362 256,362 Q245.23,362 237.615,354.385 Q230,346.77 230,336 L230,228 Q230,217.23 237.615,209.615 Q245.23,202 256,202 Z M256,222 Q253.515,222 251.757,223.757 Q250,225.515 250,228 L250,336 Q250,338.485 251.757,340.243 Q253.515,342 256,342 Q258.485,342 260.243,340.243 Q262,338.485 262,336 L262,228 Q262,225.515 260.243,223.757 Q258.485,222 256,222 Z M256,250 L256,250 A8 8 0 0 1 264,258 L264,350 A8 8 0 0 1 256,358 L256,358 A8 8 0 0 1 248,350 L248,258 A8 8 0 0 1 256,250 Z M286,356 A30 30 0 1 1 226,356 A30 30 0 1 1 286,356 Z M398,72 L398.1,72 C429.018,72.028 454.064,97.107 454.05,128.025 C454.036,158.943 428.968,184 398.05,184 C367.132,184 342.064,158.943 342.05,128.025 C342.036,97.107 367.082,72.028 398,72 Z M398,106 C386,106 380,115 380,126 L380,134 L374,142 L422,142 L416,134 L416,126 C416,115 410,106 398,106 Z M392,146 C392,149.314 394.686,152 398,152 C401.314,152 404,149.314 404,146 Z";
+
 const KIND_ICONS = {
   too_hot: "mdi:thermometer-high",
   close_windows: "mdi:window-closed-variant",
@@ -69,6 +76,11 @@ const STRINGS = {
     fan: "Fan",
     purifier: "Air purifier",
     overview: "Overview",
+    sc_score: "comfort",
+    sc_all_good: "Everything is comfortable",
+    sc_point: "{n} point to watch",
+    sc_points: "{n} points to watch",
+    n_rooms_ok: "{n} rooms OK",
     rooms: "Rooms",
     alerts: "Alerts",
     notifications: "Notifications",
@@ -265,6 +277,11 @@ const STRINGS = {
     fan: "Ventilateur",
     purifier: "Purificateur",
     overview: "Vue d'ensemble",
+    sc_score: "confort",
+    sc_all_good: "Tout est confortable",
+    sc_point: "{n} point à surveiller",
+    sc_points: "{n} points à surveiller",
+    n_rooms_ok: "{n} pièces OK",
     rooms: "Pièces",
     alerts: "Alertes",
     notifications: "Notifications",
@@ -461,6 +478,11 @@ const STRINGS = {
     fan: "Lüfter",
     purifier: "Luftreiniger",
     overview: "Übersicht",
+    sc_score: "Komfort",
+    sc_all_good: "Alles ist angenehm",
+    sc_point: "{n} Punkt zu beachten",
+    sc_points: "{n} Punkte zu beachten",
+    n_rooms_ok: "{n} Räume OK",
     rooms: "Räume",
     alerts: "Meldungen",
     notifications: "Benachrichtigungen",
@@ -657,6 +679,11 @@ const STRINGS = {
     fan: "Ventilador",
     purifier: "Purificador",
     overview: "Resumen",
+    sc_score: "confort",
+    sc_all_good: "Todo está confortable",
+    sc_point: "{n} punto a vigilar",
+    sc_points: "{n} puntos a vigilar",
+    n_rooms_ok: "{n} estancias OK",
     rooms: "Estancias",
     alerts: "Alertas",
     notifications: "Notificaciones",
@@ -853,6 +880,11 @@ const STRINGS = {
     fan: "Вентилатор",
     purifier: "Пречишћавач ваздуха",
     overview: "Преглед",
+    sc_score: "удобност",
+    sc_all_good: "Све је пријатно",
+    sc_point: "{n} ставка за праћење",
+    sc_points: "{n} ставке за праћење",
+    n_rooms_ok: "{n} соба је у реду",
     rooms: "Собе",
     alerts: "Упозорења",
     notifications: "Обавештења",
@@ -1049,6 +1081,11 @@ const STRINGS = {
     fan: "Ventilator",
     purifier: "Prečišćivač vazduha",
     overview: "Pregled",
+    sc_score: "udobnost",
+    sc_all_good: "Sve je prijatno",
+    sc_point: "{n} stavka za praćenje",
+    sc_points: "{n} stavke za praćenje",
+    n_rooms_ok: "{n} soba je u redu",
     rooms: "Sobe",
     alerts: "Upozorenja",
     notifications: "Obaveštenja",
@@ -1245,6 +1282,11 @@ const STRINGS = {
     fan: "Ventilatore",
     purifier: "Purificatore d'aria",
     overview: "Panoramica",
+    sc_score: "comfort",
+    sc_all_good: "Tutto è confortevole",
+    sc_point: "{n} punto da tenere d'occhio",
+    sc_points: "{n} punti da tenere d'occhio",
+    n_rooms_ok: "{n} stanze OK",
     rooms: "Stanze",
     alerts: "Avvisi",
     notifications: "Notifiche",
@@ -1441,6 +1483,11 @@ const STRINGS = {
     fan: "Ventilator",
     purifier: "Luchtreiniger",
     overview: "Overzicht",
+    sc_score: "comfort",
+    sc_all_good: "Alles is comfortabel",
+    sc_point: "{n} aandachtspunt",
+    sc_points: "{n} aandachtspunten",
+    n_rooms_ok: "{n} kamers OK",
     rooms: "Kamers",
     alerts: "Waarschuwingen",
     notifications: "Meldingen",
@@ -1637,6 +1684,11 @@ const STRINGS = {
     fan: "Ventoinha",
     purifier: "Purificador de ar",
     overview: "Visão geral",
+    sc_score: "conforto",
+    sc_all_good: "Está tudo confortável",
+    sc_point: "{n} ponto a vigiar",
+    sc_points: "{n} pontos a vigiar",
+    n_rooms_ok: "{n} divisões OK",
     rooms: "Divisões",
     alerts: "Alertas",
     notifications: "Notificações",
@@ -1833,6 +1885,11 @@ const STRINGS = {
     fan: "Wentylator",
     purifier: "Oczyszczacz powietrza",
     overview: "Przegląd",
+    sc_score: "komfort",
+    sc_all_good: "Wszystko jest w porządku",
+    sc_point: "{n} punkt do sprawdzenia",
+    sc_points: "{n} punkty do sprawdzenia",
+    n_rooms_ok: "{n} pomieszczeń OK",
     rooms: "Pomieszczenia",
     alerts: "Alerty",
     notifications: "Powiadomienia",
@@ -2029,6 +2086,11 @@ const STRINGS = {
     fan: "Ventilator",
     purifier: "Purificator de aer",
     overview: "Prezentare generală",
+    sc_score: "confort",
+    sc_all_good: "Totul este confortabil",
+    sc_point: "{n} punct de verificat",
+    sc_points: "{n} puncte de verificat",
+    n_rooms_ok: "{n} camere OK",
     rooms: "Camere",
     alerts: "Alerte",
     notifications: "Notificări",
@@ -2225,6 +2287,11 @@ const STRINGS = {
     fan: "Ventilator",
     purifier: "Luftrenser",
     overview: "Oversigt",
+    sc_score: "komfort",
+    sc_all_good: "Alt er behageligt",
+    sc_point: "{n} punkt at holde øje med",
+    sc_points: "{n} punkter at holde øje med",
+    n_rooms_ok: "{n} rum OK",
     rooms: "Rum",
     alerts: "Advarsler",
     notifications: "Notifikationer",
@@ -2421,6 +2488,11 @@ const STRINGS = {
     fan: "Fläkt",
     purifier: "Luftrenare",
     overview: "Översikt",
+    sc_score: "komfort",
+    sc_all_good: "Allt är bekvämt",
+    sc_point: "{n} punkt att hålla koll på",
+    sc_points: "{n} punkter att hålla koll på",
+    n_rooms_ok: "{n} rum OK",
     rooms: "Rum",
     alerts: "Varningar",
     notifications: "Aviseringar",
@@ -2617,6 +2689,11 @@ const STRINGS = {
     fan: "Вентилатор",
     purifier: "Пречиствател на въздух",
     overview: "Общ преглед",
+    sc_score: "комфорт",
+    sc_all_good: "Всичко е комфортно",
+    sc_point: "{n} точка за наблюдение",
+    sc_points: "{n} точки за наблюдение",
+    n_rooms_ok: "{n} стаи са наред",
     rooms: "Стаи",
     alerts: "Сигнали",
     notifications: "Известия",
@@ -2813,6 +2890,11 @@ const STRINGS = {
     fan: "Вентилятор",
     purifier: "Очиститель воздуха",
     overview: "Обзор",
+    sc_score: "комфорт",
+    sc_all_good: "Всё в порядке",
+    sc_point: "{n} момент для внимания",
+    sc_points: "{n} момента для внимания",
+    n_rooms_ok: "{n} комнат в норме",
     rooms: "Комнаты",
     alerts: "Оповещения",
     notifications: "Уведомления",
@@ -3009,6 +3091,11 @@ const STRINGS = {
     fan: "Вентилятор",
     purifier: "Очищувач повітря",
     overview: "Огляд",
+    sc_score: "комфорт",
+    sc_all_good: "Усе гаразд",
+    sc_point: "{n} момент для уваги",
+    sc_points: "{n} моменти для уваги",
+    n_rooms_ok: "{n} кімнат у нормі",
     rooms: "Кімнати",
     alerts: "Попередження",
     notifications: "Сповіщення",
@@ -3205,6 +3292,11 @@ const STRINGS = {
     fan: "Ventilátor",
     purifier: "Légtisztító",
     overview: "Áttekintés",
+    sc_score: "komfort",
+    sc_all_good: "Minden rendben van",
+    sc_point: "{n} figyelendő pont",
+    sc_points: "{n} figyelendő pont",
+    n_rooms_ok: "{n} szoba rendben",
     rooms: "Helyiségek",
     alerts: "Riasztások",
     notifications: "Értesítések",
@@ -3401,6 +3493,11 @@ const STRINGS = {
     fan: "Ventilátor",
     purifier: "Čistička vzduchu",
     overview: "Prehľad",
+    sc_score: "komfort",
+    sc_all_good: "Všetko je v poriadku",
+    sc_point: "{n} bod na sledovanie",
+    sc_points: "{n} body na sledovanie",
+    n_rooms_ok: "{n} miestností OK",
     rooms: "Miestnosti",
     alerts: "Upozornenia",
     notifications: "Oznámenia",
@@ -3597,6 +3694,11 @@ const STRINGS = {
     fan: "Ventilátor",
     purifier: "Čistička vzduchu",
     overview: "Přehled",
+    sc_score: "komfort",
+    sc_all_good: "Vše je v pořádku",
+    sc_point: "{n} bod ke sledování",
+    sc_points: "{n} body ke sledování",
+    n_rooms_ok: "{n} místností OK",
     rooms: "Místnosti",
     alerts: "Upozornění",
     notifications: "Oznámení",
@@ -3793,6 +3895,11 @@ const STRINGS = {
     fan: "Ventilator",
     purifier: "Čistilnik zraka",
     overview: "Pregled",
+    sc_score: "udobje",
+    sc_all_good: "Vse je udobno",
+    sc_point: "{n} točka za spremljanje",
+    sc_points: "{n} točke za spremljanje",
+    n_rooms_ok: "{n} sob je v redu",
     rooms: "Prostori",
     alerts: "Opozorila",
     notifications: "Obvestila",
@@ -3989,6 +4096,11 @@ const STRINGS = {
     fan: "Ventilators",
     purifier: "Gaisa attīrītājs",
     overview: "Pārskats",
+    sc_score: "komforts",
+    sc_all_good: "Viss ir ērti",
+    sc_point: "{n} vērā ņemams punkts",
+    sc_points: "{n} vērā ņemami punkti",
+    n_rooms_ok: "{n} istabas kārtībā",
     rooms: "Telpas",
     alerts: "Brīdinājumi",
     notifications: "Paziņojumi",
@@ -4185,6 +4297,11 @@ const STRINGS = {
     fan: "Ανεμιστήρας",
     purifier: "Καθαριστής αέρα",
     overview: "Επισκόπηση",
+    sc_score: "άνεση",
+    sc_all_good: "Όλα είναι άνετα",
+    sc_point: "{n} σημείο προς παρακολούθηση",
+    sc_points: "{n} σημεία προς παρακολούθηση",
+    n_rooms_ok: "{n} δωμάτια OK",
     rooms: "Δωμάτια",
     alerts: "Προειδοποιήσεις",
     notifications: "Ειδοποιήσεις",
@@ -5193,6 +5310,20 @@ class SmartComfortPanel extends HTMLElement {
     content.append(card);
   }
 
+  /** The comfort score shown in the overview hero: 100 minus a fixed penalty per active alert, the tone from it, the
+   *  active alerts grouped by kind, and how many rooms have nothing active. */
+  _comfort(s) {
+    const alerts = s.alerts || [];
+    const rooms = s.rooms || [];
+    const points = alerts.length;
+    const score = Math.max(0, 100 - 12 * points);
+    const tone = !points ? "good" : score >= 60 ? "warn" : "bad";
+    const byKind = {};
+    for (const a of alerts) byKind[a.kind] = (byKind[a.kind] || 0) + 1;
+    const okRooms = rooms.filter((r) => !(r.alerts || []).length).length;
+    return { score, tone, points, byKind, okRooms };
+  }
+
   _renderOverview(content) {
     this._renderStart(content);
     const s = this._status;
@@ -5204,6 +5335,40 @@ class SmartComfortPanel extends HTMLElement {
       content.append(this._el("div", "banner error", this._t("not_loaded")));
       return;
     }
+
+    const configured = this._config.options.rooms?.length || this._config.options.outdoors?.length;
+    if (configured) {
+    const c = this._comfort(s);
+    const hero = this._el("div", `sc-hero ${c.tone}`);
+    const ring = this._el("div", "sc-ring");
+    const off = (326.726 * (1 - c.score / 100)).toFixed(1);
+    ring.innerHTML = `<svg viewBox="0 0 120 120" role="img" aria-label="${c.score} / 100"><circle class="sc-trk" cx="60" cy="60" r="52"></circle><circle class="sc-arc" cx="60" cy="60" r="52" stroke-dasharray="326.726" stroke-dashoffset="${off}" transform="rotate(-90 60 60)"></circle></svg>`;
+    const num = this._el("div", "sc-num");
+    num.append(this._el("b", "", String(c.score)), this._el("span", "", this._t("sc_score")));
+    ring.append(num);
+    const emb = this._el("div", "sc-emb");
+    emb.innerHTML = `<svg viewBox="${EMBLEM_VIEWBOX}" role="img" aria-hidden="true"><path fill="currentColor" d="${EMBLEM_PATH}"></path></svg>`;
+    const who = this._el("div", "sc-who");
+    who.append(
+      this._el(
+        "div",
+        "sc-title",
+        c.points ? this._t(c.points === 1 ? "sc_point" : "sc_points", { n: c.points }) : this._t("sc_all_good")
+      )
+    );
+    const meta = [`${this._t("outdoor")} ${this._format(s.outdoor_temperature)} °C`];
+    if (s.night) meta.push(this._t("quiet_night"));
+    who.append(this._el("div", "sc-sub", meta.join(" · ")));
+    const pills = this._el("div", "sc-pills");
+    for (const [kind, n] of Object.entries(c.byKind)) {
+      pills.append(this._el("span", "sc-pill", n > 1 ? `${this._kindName(kind)} ×${n}` : this._kindName(kind)));
+    }
+    if (c.okRooms) pills.append(this._el("span", "sc-pill ok", this._t("n_rooms_ok", { n: c.okRooms })));
+    who.append(pills);
+    hero.append(ring, emb, who);
+    content.append(hero);
+    }
+
     const summary = this._el("div", "summary");
     const tile = (icon, label, value, onClick, active) => {
       const t = this._el(onClick ? "button" : "div", `tile${active === false ? " off" : ""}`);
@@ -6815,6 +6980,26 @@ const STYLE = `
   .banner.error { background: rgba(var(--rgb-error-color, 219, 68, 55), 0.14); color: var(--error-color); }
   .banner.success { background: rgba(var(--rgb-success-color, 67, 160, 71), 0.14); }
   .banner .retry { margin-left: 8px; font: inherit; font-weight: 500; color: var(--primary-color); background: none; border: 1px solid currentColor; border-radius: 16px; padding: 2px 12px; cursor: pointer; }
+  .sc-hero { display: flex; align-items: center; gap: 20px; padding: 16px 20px; margin-bottom: 12px; flex-wrap: wrap; border-radius: 12px; border: 1px solid var(--divider-color); background-color: var(--ha-card-background, var(--card-background-color, #fff)); background-image: linear-gradient(135deg, color-mix(in srgb, var(--sc-tone) 10%, transparent), transparent); }
+  .sc-hero.good { --sc-tone: var(--success-color, #43a047); }
+  .sc-hero.warn { --sc-tone: var(--warning-color, #ffa600); }
+  .sc-hero.bad { --sc-tone: var(--error-color, #db4437); }
+  .sc-ring { position: relative; width: 112px; height: 112px; flex: none; }
+  .sc-ring svg { width: 100%; height: 100%; }
+  .sc-trk { fill: none; stroke: var(--divider-color); stroke-width: 10; }
+  .sc-arc { fill: none; stroke: var(--sc-tone); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .8s ease; }
+  .sc-num { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .sc-num b { font-size: 32px; font-weight: 300; line-height: 1; }
+  .sc-num span { font-size: 11px; color: var(--secondary-text-color); margin-top: 2px; }
+  .sc-emb { width: 76px; height: 76px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center; color: var(--sc-tone); background: color-mix(in srgb, var(--sc-tone) 16%, transparent); }
+  .sc-emb svg { width: 60%; height: 60%; display: block; }
+  .sc-who { flex: 1; min-width: 190px; }
+  .sc-title { font-size: 20px; font-weight: 500; }
+  .sc-sub { font-size: 13px; color: var(--secondary-text-color); margin: 4px 0 10px; }
+  .sc-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .sc-pill { font-size: 11px; font-weight: 500; padding: 2px 10px; border-radius: 12px; white-space: nowrap; color: color-mix(in srgb, var(--sc-tone) 55%, var(--primary-text-color)); background: color-mix(in srgb, var(--sc-tone) 16%, transparent); }
+  .sc-pill.ok { --sc-tone: var(--success-color, #43a047); }
+  @media (max-width: 600px) { .sc-hero { gap: 14px; padding: 14px; } .sc-ring { width: 92px; height: 92px; } .sc-num b { font-size: 26px; } .sc-emb { width: 60px; height: 60px; } }
   .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
   .tile {
     font: inherit;
