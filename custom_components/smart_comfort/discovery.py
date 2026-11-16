@@ -143,7 +143,6 @@ ANNEX_WORDS = (
     # Portuguese.
     "adega",
     "garagem",
-    "oficina",
     "lavandaria",
     "sotao",
     "arrecadacao",
@@ -894,7 +893,8 @@ def discover_rooms(hass: HomeAssistant) -> Found:
         )
         if openings:
             room[k.CONF_OPENINGS] = openings
-        if _has(area.name, ANNEX_WORDS) or _has(area.area_id, ANNEX_WORDS):
+        # Not a bedroom: a bedroom under the roof ("Chambre sous les combles") is lived in.
+        if (_has(area.name, ANNEX_WORDS) or _has(area.area_id, ANNEX_WORDS)) and not _bedroom(area):
             room[k.CONF_TYPE] = k.ROOM_TYPE_ANNEX
         coolers = [
             e for e in area.entities if e.domain == "climate" and "cool" in (e.attributes.get("hvac_modes") or [])
