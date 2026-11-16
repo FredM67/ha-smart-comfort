@@ -5358,6 +5358,13 @@ class SmartComfortPanel extends HTMLElement {
     content.append(card);
   }
 
+  /** The type chosen in a room's form: stored when the user changes it, living space included, since discovery
+   *  suggests a type only to the rooms without one (a room set back to living space stays so); unchanged, left as is. */
+  _setRoomType(room, type) {
+    const chosen = type || "living_space";
+    if (chosen !== (room.type || "living_space")) room.type = chosen;
+  }
+
   /** The comfort score shown in the overview hero: 100 minus a penalty per active alert, weighted by severity like the
    *  per-room comfort sensors (SCORE_PENALTY), the tone from it, the active alerts grouped by kind, and how many rooms
    *  have nothing active. Annex rooms (cellar, garage…) stay out of it, so a cold cellar never pulls the home down. */
@@ -6296,9 +6303,7 @@ class SmartComfortPanel extends HTMLElement {
         (value) => {
           room.name = value.name;
           toggle.lastChild.textContent = room.name || "—";
-          // Living space is the default: stored only when it is an annex, to keep the options minimal.
-          if (value.type && value.type !== "living_space") room.type = value.type;
-          else delete room.type;
+          this._setRoomType(room, value.type);
         },
         (f) => this._label("room", f.name),
         (f) => this._helper("room", f.name)

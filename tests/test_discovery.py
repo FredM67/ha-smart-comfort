@@ -10,6 +10,7 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.smart_comfort.config_flow import _room_from_form
 from custom_components.smart_comfort.const import DOMAIN
 from custom_components.smart_comfort.discovery import _slug, discover_rooms, merge
 
@@ -189,6 +190,36 @@ async def test_discover_annex_type(hass: HomeAssistant) -> None:
     merged, report = merge(options, found)
     assert merged["rooms"][0]["type"] == "annex"
     assert "Cave" in report.updated
+
+
+async def test_annex_not_for_bedroom_or_office(hass: HomeAssistant) -> None:
+    """A bedroom under the roof and a Spanish office are lived in, although their names hold annex words."""
+    h = House(hass)
+    for name in ("Chambre sous les combles", "Oficina", "Grenier"):
+        area = h.area(name)
+        h.entity("sensor", f"{_slug(name)}_temperature", "19", area=area, device_class="temperature")
+    by_name = {r["name"]: r for r in discover_rooms(hass).rooms}
+    assert "type" not in by_name["Chambre sous les combles"]
+    assert "type" not in by_name["Oficina"]
+    assert by_name["Grenier"]["type"] == "annex"
+
+
+async def test_living_space_choice_survives_discovery(hass: HomeAssistant) -> None:
+    """A room set back to living space in the form stays so when discovery runs again."""
+    h = House(hass)
+    cellar = h.area("Cave")
+    h.entity("sensor", "cellar_temperature", "14", area=cellar, device_class="temperature")
+    options, _ = merge({}, discover_rooms(hass))
+    room = options["rooms"][0]
+    assert room["type"] == "annex"
+    # A form submitted with the type unchanged leaves it as it was.
+    assert "type" not in _room_from_form({"name": "Cave"}, {"name": "Cave"})
+    assert _room_from_form({"name": "Cave", "type": "annex"}, room)["type"] == "annex"
+    # Set back to living space: stored, so discovery doesn't suggest the annex again.
+    options["rooms"][0] = _room_from_form({"name": "Cave", "type": "living_space"}, room)
+    assert options["rooms"][0]["type"] == "living_space"
+    again, _ = merge(options, discover_rooms(hass))
+    assert again["rooms"][0]["type"] == "living_space"
 
 
 async def test_merge_keeps_what_is_set(hass: HomeAssistant) -> None:

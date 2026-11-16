@@ -337,11 +337,11 @@ def _keep_items(old: Any, new_ids: list[str]) -> list[Any]:
 def _room_from_form(user_input: dict[str, Any], old: dict[str, Any]) -> dict[str, Any]:
     room = copy.deepcopy(old)
     room[k.CONF_NAME] = user_input[k.CONF_NAME].strip()
-    # Living space is the default: stored only when it is an annex, to keep the options minimal.
-    if (room_type := user_input.get(k.CONF_TYPE)) and room_type != k.ROOM_TYPE_LIVING:
+    # The type is stored when the user changes it, living space included: discovery suggests a type only to the
+    # rooms without one, so a room set back to living space stays so. Unchanged, it is left as it was.
+    room_type = user_input.get(k.CONF_TYPE) or k.ROOM_TYPE_LIVING
+    if room_type != (old.get(k.CONF_TYPE) or k.ROOM_TYPE_LIVING):
         room[k.CONF_TYPE] = room_type
-    else:
-        room.pop(k.CONF_TYPE, None)
     for key in (k.CONF_TEMPERATURE, k.CONF_CO2, k.CONF_HUMIDITY, k.CONF_NOISE):
         if user_input.get(key):
             room[key] = user_input[key]
