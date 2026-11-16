@@ -331,7 +331,27 @@ EQUIPMENT_WORDS = frozenset(
 BUSY_DOMAINS = {"climate", "fan", "humidifier", "water_heater", "vacuum", "camera"}
 OPENING_CLASSES = {"window", "door", "opening"}
 # An air device's internal readings (its coil, its tank…), not the room's air: left out of the ambient fallback.
-NOT_AMBIENT_WORDS = ("internal", "coil", "outlet", "inlet", "water", "tank", "evaporator", "condenser")
+# Stems in the supported languages (the names follow Home Assistant's language); "_eau" at a word start only, so
+# that "bureau" doesn't match.
+NOT_AMBIENT_WORDS = (
+    "intern",  # internal, interne
+    "coil",
+    "serpentin",
+    "outlet",
+    "inlet",
+    "sortie",
+    "water",
+    "wasser",
+    "_eau",
+    "agua",
+    "acqua",
+    "tank",
+    "reservoir",
+    "evapor",  # evaporator, évaporateur, evaporador
+    "verdampf",
+    "condens",  # condenser, condenseur
+    "kondens",
+)
 
 # Integrations of kitchen and laundry appliances: their doors, lights and fans (a hood's extractor) are the
 # appliance's, not the room's openings, lamps and fans.
@@ -624,11 +644,7 @@ def _ambient(
         domains = device_domains.get(e.device_id or "", set())
         if "humidifier" in domains:
             return 0
-        siblings = by_device.get(e.device_id or "", [])
-        is_purifier = any(s.device_class in ("pm25", "pm10", "aqi") for s in siblings) or _has(
-            f"{e.entity_id} {e.name}", PURIFIER_WORDS
-        )
-        if "fan" in domains and is_purifier:
+        if "fan" in domains and _is_purifier(e, by_device):
             return 1
         if "climate" in domains:
             return 2
@@ -831,8 +847,8 @@ def discover_rooms(hass: HomeAssistant) -> Found:
         for e in sorted((e for e in area.entities if e.domain == "fan"), key=lambda e: e.entity_id):
             if "climate" in device_domains.get(e.device_id or "", set()):
                 continue  # The fan of an air conditioner.
-            if "humidifier" in device_domains.get(e.device_id or "", set()):
-                continue  # The blower of a (de)humidifier, not a comfort fan.
+            if "humidifier" in device_domains.get(e.device_id or "", set()) and not _is_purifier(e, by_device):
+                continue  # The blower of a (de)humidifier, not a comfort fan (a purifier that humidifies stays).
             if _appliance(e, by_device):
                 continue  # The extractor of a range hood, not a comfort fan.
             if _is_purifier(e, by_device):

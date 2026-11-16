@@ -380,6 +380,33 @@ async def test_ambient_fallback_yields_to_standalone(hass: HomeAssistant) -> Non
     assert bureau["humidity"] == "sensor.humidifier_humidity"
 
 
+async def test_purifier_that_humidifies(hass: HomeAssistant) -> None:
+    """A purifier that also humidifies (fan, humidifier and air sensors on one device) is still a purifier."""
+    h = House(hass)
+    room = h.area("Salon")
+    dev = h.device("Dyson Purifier Humidify+Cool", room)
+    h.entity("fan", "dyson_ph", "on", dev)
+    h.entity("humidifier", "dyson_ph", "on", dev, device_class="humidifier")
+    h.entity("sensor", "dyson_ph_pm2_5", "8", dev, device_class="pm25")
+    salon = {r["name"]: r for r in discover_rooms(hass).rooms}["Salon"]
+    assert [p["entity_id"] if isinstance(p, dict) else p for p in salon["purifiers"]] == ["fan.dyson_ph"]
+    assert "fans" not in salon
+
+
+async def test_ambient_internal_readings_in_french(hass: HomeAssistant) -> None:
+    """Internal readings named in French (water, outlet) are left out; "eau" in "bureau" is not water."""
+    h = House(hass)
+    room = h.area("Bureau")
+    hum = h.device("Humidificateur", room)
+    h.entity("humidifier", "humidificateur", "on", hum)
+    h.entity("sensor", "humidificateur_temperature_de_l_eau", "30", hum, device_class="temperature")
+    h.entity("sensor", "humidificateur_temperature_de_sortie", "28", hum, device_class="temperature")
+    h.entity("sensor", "bureau_humidificateur_humidite", "45", hum, device_class="humidity")
+    bureau = {r["name"]: r for r in discover_rooms(hass).rooms}["Bureau"]
+    assert "temperature" not in bureau
+    assert bureau["humidity"] == "sensor.bureau_humidificateur_humidite"
+
+
 async def test_discover_lights(hass: HomeAssistant) -> None:
     """Dimmable lamps only: not a device's indicator, a camera's floodlight, an on/off light; night lights flagged."""
     h = House(hass)
